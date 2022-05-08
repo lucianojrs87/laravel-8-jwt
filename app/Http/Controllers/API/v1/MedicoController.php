@@ -3,26 +3,18 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Lib\FunctionsSystem;
 use App\Http\Lib\MessagesApi;
-use App\Models\User;
+use App\Models\Medico;
 use Dotenv\Exception\ValidationException;
-use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
-use Exception;
-use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class MedicoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $medicos;
 
-    public function __construct(User $users)
+    public function __construct(Medico $medicos)
     {
-        $this->users = $users;
+        $this->medicos = $medicos;
     }
 
     public function index()
@@ -32,17 +24,17 @@ class UserController extends Controller
     //Método que irá retornar todos os users cadastrados na base de dados
     public function getAll()
     {
-        $users = User::all();
+        $medico = Medico::all();
 
-        return response()->json($users, 200);
+        return response()->json($medico, 200);
     }
 
-    public function getById($idUser)
+    public function getById($idMedico)
     {
 
-        $user = User::where('id', $idUser)->first();
-        if ($user) {
-            return response()->json($user, 200);
+        $medico = Medico::where('id', $idMedico)->first();
+        if ($medico) {
+            return response()->json($medico, 200);
         } else {
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_404_NOT_FOUND), 404);
         }
@@ -51,19 +43,14 @@ class UserController extends Controller
     public function update(Request $request, int $id)
     {
         //
-        $users = $this->users->find($id);
+        $medico = $this->medicos->find($id);
 
 
         try {
 
             $this->checkdata($request);
-
-
             $requestData = $request->all();
-
-            $requestData['password'] = Hash::make($requestData['password']);
-
-            $users->update($requestData);
+            $medico->update($requestData);
 
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
         } catch (ValidationException $e) {
@@ -76,17 +63,14 @@ class UserController extends Controller
     public function checkdata($request)
     {
 
-        if ($request->name == null) {
+        if ($request->med_nome == null) {
             throw new ValidationException();
         }
 
-        if ($request->password == null) {
+        if ($request->med_CRM == null) {
             throw new ValidationException();
         }
 
-        if ($request->email == null) {
-            throw new ValidationException();
-        }
     }
 
 
@@ -103,12 +87,9 @@ class UserController extends Controller
         try {
 
             $this->checkdata($request);
-
             $requestData = $request->all();
 
-            $requestData['password'] = Hash::make($requestData['password']);
-
-            $this->users->create($requestData);
+            $this->medicos->create($requestData);
 
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::CREATED_SUCESS), 200);
         } catch (ValidationException $e) {
@@ -148,16 +129,16 @@ class UserController extends Controller
     public function destroy($id)
     {
 
-        $users = $this->users->find($id);
+        $medico = $this->medicos->find($id);
 
-         if ($users != null) {
-            $delete = $users->delete();
+        if ($medico != null) {
+            $delete = $medico->delete();
 
             if ($delete) {
 
                 return response()->json(array('código' => 200, 'descrição' => MessagesApi::DELETED_SUCESS), 200);
             }
-        }  else {
+        } else {
 
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
         }

@@ -5,44 +5,38 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Lib\FunctionsSystem;
 use App\Http\Lib\MessagesApi;
-use App\Models\User;
+use App\Models\Paciente;
 use Dotenv\Exception\ValidationException;
-use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
 use Exception;
-use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class PacienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $pacientes;
 
-    public function __construct(User $users)
+    public function __construct(Paciente $pacientes)
     {
-        $this->users = $users;
+        $this->pacientes = $pacientes;
     }
 
     public function index()
     {
     }
 
-    //Método que irá retornar todos os users cadastrados na base de dados
+    //Método que irá retornar todos os Pacientes cadastrados na base de dados
     public function getAll()
     {
-        $users = User::all();
+        $paciente = Paciente::all();
 
-        return response()->json($users, 200);
+        return response()->json($paciente, 200);
     }
 
-    public function getById($idUser)
+    public function getById($idPaciente)
     {
 
-        $user = User::where('id', $idUser)->first();
-        if ($user) {
-            return response()->json($user, 200);
+        $paciente = Paciente::where('id', $idPaciente)->first();
+        if ($paciente) {
+            return response()->json($paciente, 200);
         } else {
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_404_NOT_FOUND), 404);
         }
@@ -51,19 +45,14 @@ class UserController extends Controller
     public function update(Request $request, int $id)
     {
         //
-        $users = $this->users->find($id);
+        $paciente = $this->pacientes->find($id);
 
 
         try {
 
             $this->checkdata($request);
-
-
             $requestData = $request->all();
-
-            $requestData['password'] = Hash::make($requestData['password']);
-
-            $users->update($requestData);
+            $paciente->update($requestData);
 
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
         } catch (ValidationException $e) {
@@ -76,15 +65,19 @@ class UserController extends Controller
     public function checkdata($request)
     {
 
-        if ($request->name == null) {
+        if ($request->pac_dataNascimento == null) {
             throw new ValidationException();
         }
 
-        if ($request->password == null) {
+        if (!FunctionsSystem::validateDate($request->pac_dataNascimento)) {
             throw new ValidationException();
         }
 
-        if ($request->email == null) {
+        if ($request->pac_telefones == null) {
+            throw new ValidationException();
+        }
+
+        if ($request->pac_nome == null) {
             throw new ValidationException();
         }
     }
@@ -103,12 +96,9 @@ class UserController extends Controller
         try {
 
             $this->checkdata($request);
-
             $requestData = $request->all();
 
-            $requestData['password'] = Hash::make($requestData['password']);
-
-            $this->users->create($requestData);
+            $this->pacientes->create($requestData);
 
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::CREATED_SUCESS), 200);
         } catch (ValidationException $e) {
@@ -148,16 +138,16 @@ class UserController extends Controller
     public function destroy($id)
     {
 
-        $users = $this->users->find($id);
+        $paciente = $this->pacientes->find($id);
 
-         if ($users != null) {
-            $delete = $users->delete();
+        if ($paciente != null) {
+            $delete = $paciente->delete();
 
             if ($delete) {
 
                 return response()->json(array('código' => 200, 'descrição' => MessagesApi::DELETED_SUCESS), 200);
             }
-        }  else {
+        } else {
 
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
         }

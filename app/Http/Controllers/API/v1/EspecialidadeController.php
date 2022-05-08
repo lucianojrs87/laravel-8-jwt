@@ -3,26 +3,18 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Lib\FunctionsSystem;
 use App\Http\Lib\MessagesApi;
-use App\Models\User;
+use App\Models\Especialidade;
 use Dotenv\Exception\ValidationException;
-use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
-use Exception;
-use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class EspecialidadeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $especialidades;
 
-    public function __construct(User $users)
+    public function __construct(Especialidade $especialidades)
     {
-        $this->users = $users;
+        $this->especialidades = $especialidades;
     }
 
     public function index()
@@ -32,17 +24,17 @@ class UserController extends Controller
     //Método que irá retornar todos os users cadastrados na base de dados
     public function getAll()
     {
-        $users = User::all();
+        $especialidade = Especialidade::all();
 
-        return response()->json($users, 200);
+        return response()->json($especialidade, 200);
     }
 
-    public function getById($idUser)
+    public function getById($idEspecialidade)
     {
 
-        $user = User::where('id', $idUser)->first();
-        if ($user) {
-            return response()->json($user, 200);
+        $especialidade = Especialidade::where('id', $idEspecialidade)->first();
+        if ($especialidade) {
+            return response()->json($especialidade, 200);
         } else {
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_404_NOT_FOUND), 404);
         }
@@ -51,19 +43,14 @@ class UserController extends Controller
     public function update(Request $request, int $id)
     {
         //
-        $users = $this->users->find($id);
+        $especialidade = $this->especialidades->find($id);
 
 
         try {
 
             $this->checkdata($request);
-
-
             $requestData = $request->all();
-
-            $requestData['password'] = Hash::make($requestData['password']);
-
-            $users->update($requestData);
+            $especialidade->update($requestData);
 
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
         } catch (ValidationException $e) {
@@ -76,21 +63,10 @@ class UserController extends Controller
     public function checkdata($request)
     {
 
-        if ($request->name == null) {
-            throw new ValidationException();
-        }
-
-        if ($request->password == null) {
-            throw new ValidationException();
-        }
-
-        if ($request->email == null) {
+        if ($request->espec_nome == null) {
             throw new ValidationException();
         }
     }
-
-
-
 
     /**
      * Store a newly created resource in storage.
@@ -103,12 +79,9 @@ class UserController extends Controller
         try {
 
             $this->checkdata($request);
-
             $requestData = $request->all();
 
-            $requestData['password'] = Hash::make($requestData['password']);
-
-            $this->users->create($requestData);
+            $this->especialidades->create($requestData);
 
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::CREATED_SUCESS), 200);
         } catch (ValidationException $e) {
@@ -148,16 +121,16 @@ class UserController extends Controller
     public function destroy($id)
     {
 
-        $users = $this->users->find($id);
+        $especialidade = $this->especialidades->find($id);
 
-         if ($users != null) {
-            $delete = $users->delete();
+        if ($especialidade != null) {
+            $delete = $especialidade->delete();
 
             if ($delete) {
 
                 return response()->json(array('código' => 200, 'descrição' => MessagesApi::DELETED_SUCESS), 200);
             }
-        }  else {
+        } else {
 
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
         }
