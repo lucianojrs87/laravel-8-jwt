@@ -8,12 +8,12 @@ Api criada em Laravel na versão 8 com MySql e implementando JWT como autenticad
 
 Configurei com estes dados:
 
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3307
-DB_DATABASE=api-tisaude
-DB_USERNAME=root
-DB_PASSWORD=root
+- DB_CONNECTION=mysql
+- DB_HOST=127.0.0.1
+- DB_PORT=3307
+- DB_DATABASE=api-tisaude
+- DB_USERNAME=root
+- DB_PASSWORD=root
 
 Ao clonar o projeto no git irá um arquivo .env-example. Todas as informações de conexão estarão lá, basta se atentar para a porta, o nome do DB, o username e a senha de acesso ao banco no ambiente que o avaliador irá testar para que possa espelhar corretamente. Copie o arquivo, cole e em seguida terá de renomeá-lo desta forma: ".env"
  
