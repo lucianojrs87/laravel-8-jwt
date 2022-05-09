@@ -34,7 +34,7 @@ Em seguida iremos gerar a key do nosso projeto com o comando:
 php artisan key:generate
 ```
 
-## Passo 4) Gerar a key de autenticação do JWT
+## 4) Gerar a key de autenticação do JWT
 
 Rode o comando:
 
@@ -43,7 +43,7 @@ php artisan jwt:secret
 ```
 
 
-## Passo 5) Alimentando os dados em nosso banco
+## 5) Alimentando os dados em nosso banco
 
 Resolvi utilizar migrations para criar as tabelas do banco de dados e seeders para inserir registros.
 Rode o comando: 
