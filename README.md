@@ -4,6 +4,9 @@
 
 Api criada em Laravel na versão 8 com MySql e implementando JWT como autenticador.
 
+Laravel Framework 8.83.11
+PHP 7.3.19
+
 ## 1) Configuração do banco de dados
 
 Configurei com estes dados:
