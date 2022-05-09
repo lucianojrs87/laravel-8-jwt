@@ -8,15 +8,20 @@ use App\Http\Lib\MessagesApi;
 use App\Models\Paciente;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
-use Exception;
+use App\Models\PlanoSaude;
+use App\Models\PacientePlano;
 
 class PacienteController extends Controller
 {
     protected $pacientes;
+    protected $planosSaude;
+    protected $pacientesPlanos;
 
-    public function __construct(Paciente $pacientes)
+    public function __construct(Paciente $pacientes, PlanoSaude $planosSaude, PacientePlano $pacientesPlanos)
     {
         $this->pacientes = $pacientes;
+        $this->planosSaude = $planosSaude;
+        $this->pacientesPlanos = $pacientesPlanos;
     }
 
     public function index()
@@ -27,8 +32,11 @@ class PacienteController extends Controller
     public function getAll()
     {
         $paciente = Paciente::all();
-
-        return response()->json($paciente, 200);
+        if ($paciente != null) {
+            return response()->json($paciente, 200);
+        } else {
+            return response()->json(array('código' => 404, 'descrição' => MessagesApi::LIST_NULL), 404);
+        }
     }
 
     public function getById($idPaciente)
@@ -47,18 +55,22 @@ class PacienteController extends Controller
         //
         $paciente = $this->pacientes->find($id);
 
+        if ($paciente != null) {
 
-        try {
+            try {
 
-            $this->checkdata($request);
-            $requestData = $request->all();
-            $paciente->update($requestData);
+                $this->checkdata($request);
+                $requestData = $request->all();
+                $paciente->update($requestData);
 
-            return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
-        } catch (ValidationException $e) {
+                return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
+            } catch (ValidationException $e) {
 
 
-            return response()->json(array('código' => 400, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
+                return response()->json(array('código' => 400, 'descrição' => $e->getMessage()), 400);
+            }
+        } else {
+            return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_404_NOT_FOUND), 404);
         }
     }
 
@@ -66,24 +78,81 @@ class PacienteController extends Controller
     {
 
         if ($request->pac_dataNascimento == null) {
-            throw new ValidationException();
+            throw new ValidationException('Data de nascimento não pode ser nula');
         }
 
         if (!FunctionsSystem::validateDate($request->pac_dataNascimento)) {
-            throw new ValidationException();
+            throw new ValidationException('Data de nascimento não é válida. Envie no formato: Y-m-d. Ex: 2021-01-01');
         }
 
         if ($request->pac_telefones == null) {
-            throw new ValidationException();
+            throw new ValidationException('Telefone não pode ser nulo');
         }
 
         if ($request->pac_nome == null) {
-            throw new ValidationException();
+            throw new ValidationException('O nome do paciente não pode ser nulo');
+        }
+    }
+
+    //Método que faz a associação do Paciente com o Plano de saúde
+    public function associatePatientwithPlan(Request $request)
+    {
+        $requestData = $request->all();
+        $paciente = $this->pacientes->find($requestData['id_paciente']);
+        $planoSaude = $this->planosSaude->find($requestData['id_plano']);
+        if ($paciente == null) {
+            return response()->json(array('código' => 404, 'descrição' => MessagesApi::PATIENT_NOT_FOUND), 404);
+        }
+        if ($planoSaude == null) {
+            return response()->json(array('código' => 404, 'descrição' => MessagesApi::PLAN_NOT_FOUND), 404);
+        }
+        if ($paciente != null && $planoSaude != null) {
+            $associacao = $this->pacientesPlanos->where('id_paciente', $requestData['id_paciente'])
+                ->where('id_plano', $requestData['id_plano'])->first();
+            if ($associacao == null) {
+                $pacientePlano = $this->pacientesPlanos->create($requestData);
+
+                return response()->json(array('código' => 200, 'descrição' => MessagesApi::ASSOCIATION_SUCCESS), 200);
+            } else {
+                return response()->json(array('código' => 400, 'descrição' => MessagesApi::DUPLICATE_ASSOCIATION), 400);
+            }
+        }
+    }
+
+    public function getAllPlansByIdPatient($idPaciente)
+    {
+        $planosAssociados = $this->pacientesPlanos->where('id_paciente', $idPaciente)->get();
+
+        if ($planosAssociados != null) {
+
+            foreach ($planosAssociados as $item) {
+                $item['plano'] = $item->plano()->first()->plano_descricao;
+                $item['paciente'] = $item->paciente()->first()->pac_nome;
+            }
+
+            return response()->json($planosAssociados, 200);
+        } else {
+            return response()->json(array('código' => 404, 'descrição' => MessagesApi::PATIENT_NOT_FOUND_ASSOCIATION), 404);
         }
     }
 
 
+    public function deleteAssociationPacPlano($idAssociacao)
+    {
+        $associacao = $this->pacientesPlanos->find($idAssociacao);
 
+        if ($associacao != null) {
+            $delete = $associacao->delete();
+
+            if ($delete) {
+
+                return response()->json(array('código' => 200, 'descrição' => MessagesApi::DELETED_SUCESS), 200);
+            }
+        } else {
+
+            return response()->json(array('código' => 404, 'descrição' => MessagesApi::ASSOCIATION_NOT_FOUND), 400);
+        }
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -103,7 +172,7 @@ class PacienteController extends Controller
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::CREATED_SUCESS), 200);
         } catch (ValidationException $e) {
 
-            return response()->json(array('código' => 400, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
+            return response()->json(array('código' => 400, 'descrição' => $e->getMessage()), 400);
         }
     }
 

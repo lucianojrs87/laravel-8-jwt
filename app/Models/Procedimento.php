@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PlanoSaude extends Model
+class Procedimento extends Model
 {
-    protected $table = 'planos_saude';
+    protected $table = 'procedimentos';
     //Validações de insert
     protected $fillable = [
-        'plano_descricao',
-        'plano_telefone'
+        'proc_nome',
+        'proc_valor'
     ];
 
     //Método de busca
@@ -18,8 +18,8 @@ class PlanoSaude extends Model
     {
         # code...
         return $this->where(function ($query) use ($data) {
-            if (isset($data['plano_descricao']))
-                $query->orWhere('plano_descricao', 'like', $data['plano_descricao']);
+            if (isset($data['proc_nome']))
+                $query->orWhere('proc_nome', 'like', $data['proc_nome']);
         })->paginate($countPage);
     }
 

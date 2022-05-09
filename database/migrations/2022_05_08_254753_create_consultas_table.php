@@ -24,9 +24,6 @@ class CreateConsultasTable extends Migration
             //Chave estrangeira com médico
             $table->unsignedBigInteger('id_medico')->nullable()->index();
             $table->foreign('id_medico')->references('id')->on('medicos');
-            //Chave estrangeira com procedimento
-            $table->unsignedBigInteger('id_procedimento')->nullable()->index();
-            $table->foreign('id_procedimento')->references('id')->on('procedimentos');
 
             $table->timestamps();
         });

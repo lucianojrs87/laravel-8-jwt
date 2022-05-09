@@ -14,7 +14,7 @@ class Paciente extends Model
         'pac_nome'
     ];
 
-    //Metodo de busca
+    //Método de busca
     public function search(array $data, $countPage)
     {
         # code...

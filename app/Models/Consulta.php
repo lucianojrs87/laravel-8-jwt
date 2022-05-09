@@ -11,10 +11,12 @@ class Consulta extends Model
     protected $fillable = [
         'data',
         'hora',
+        'id_paciente',
+        'id_medico',
         'particular'
     ];
 
-    //Metodo de busca
+    //Método de busca
     public function search(array $data, $countPage)
     {
         # code...
@@ -24,15 +26,16 @@ class Consulta extends Model
         })->paginate($countPage);
     }
 
-    public function comboModelos()
+    //Método de relacionamento com Paciente
+    public function paciente()
     {
-        $modelos = $this->all();
-
-        $arrModelos = array();
-        $arrModelos[''] = 'Selecione...';
-        foreach ($modelos as $key => $item) {
-            $arrModelos[$item->id] = $item->nome;
-        }
-        return $arrModelos;
+        return $this->hasOne(Paciente::class,'id','id_paciente');
     }
+
+    //Método de relacionamento com Médico
+    public function medico()
+    {
+        return $this->hasOne(Medico::class,'id','id_medico');
+    }
+
 }

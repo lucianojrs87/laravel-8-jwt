@@ -11,10 +11,10 @@ class Medico extends Model
     protected $fillable = [
         'med_nome',
         'med_CRM',
-        'med_especialidade'
+        'id_especialidade'
     ];
 
-    //Metodo de busca
+    //Método de busca
     public function search(array $data, $countPage)
     {
         # code...
@@ -22,6 +22,12 @@ class Medico extends Model
             if (isset($data['med_nome']))
                 $query->orWhere('med_nome', 'like', $data['med_nome']);
         })->paginate($countPage);
+    }
+
+    //Método de relacionamento com especialidade
+    public function especialidade()
+    {
+        return $this->hasOne(Especialidade::class,'id','id_especialidade');
     }
 
 }

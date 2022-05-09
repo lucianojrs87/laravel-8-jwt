@@ -49,18 +49,20 @@ class PlanosSaudeController extends Controller
         //
         $planoSaude = $this->planosSaude->find($id);
 
+        if ($planoSaude != null) {
 
-        try {
+            try {
+                $this->checkdata($request);
+                $requestData = $request->all();
+                $planoSaude->update($requestData);
 
-            $this->checkdata($request);
-            $requestData = $request->all();
-            $planoSaude->update($requestData);
+                return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
+            } catch (ValidationException $e) {
 
-            return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
-        } catch (ValidationException $e) {
-
-
-            return response()->json(array('código' => 400, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
+                return response()->json(array('código' => 400, 'descrição' => $e->getMessage()), 400);
+            }
+        } else {
+            return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_404_NOT_FOUND), 404);
         }
     }
 
@@ -97,10 +99,9 @@ class PlanosSaudeController extends Controller
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::CREATED_SUCESS), 200);
         } catch (ValidationException $e) {
 
-            return response()->json(array('código' => 400, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
+            return response()->json(array('código' => 400, 'descrição' => $e->getMessage()), 400);
         }
     }
-
 
 
     /**

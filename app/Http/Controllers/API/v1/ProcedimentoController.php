@@ -4,21 +4,17 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Lib\MessagesApi;
-use App\Models\Medico;
+use App\Models\Procedimento;
 use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
-use App\Models\Especialidade;
 
-class MedicoController extends Controller
+class ProcedimentoController extends Controller
 {
-    protected $medicos;
-    protected $especialidades;
+    protected $procedimentos;
 
-
-    public function __construct(Medico $medicos, Especialidade $especialidades)
+    public function __construct(Procedimento $procedimentos)
     {
-        $this->medicos = $medicos;
-        $this->especialidades = $especialidades;
+        $this->procedimentos = $procedimentos;
     }
 
     public function index()
@@ -28,25 +24,20 @@ class MedicoController extends Controller
     //Método que irá retornar todos os users cadastrados na base de dados
     public function getAll()
     {
-        $medico = Medico::all();
-        if ($medico != null) {
-            foreach ($medico as $item) {
-                $item['especialidade'] = $item->especialidade()->first()->espec_nome;
-            }
-
-            return response()->json($medico, 200);
+        $procedimento = Procedimento::all();
+        if ($procedimento != null) {
+            return response()->json($procedimento, 200);
         } else {
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::LIST_NULL), 404);
         }
     }
 
-    public function getById($idMedico)
+    public function getById($idProcedimento)
     {
 
-        $medico = Medico::where('id', $idMedico)->first();
-        if ($medico) {
-            $medico['especialidade'] = $medico->especialidade()->first()->espec_nome;
-            return response()->json($medico, 200);
+        $procedimento = Procedimento::where('id', $idProcedimento)->first();
+        if ($procedimento) {
+            return response()->json($procedimento, 200);
         } else {
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_404_NOT_FOUND), 404);
         }
@@ -55,20 +46,22 @@ class MedicoController extends Controller
     public function update(Request $request, int $id)
     {
         //
-        $medico = $this->medicos->find($id);
+        $procedimento = $this->procedimentos->find($id);
 
-        if ($medico != null) {
+        if ($procedimento != null) {
+
             try {
                 $this->checkdata($request);
                 $requestData = $request->all();
-                $medico->update($requestData);
+                $procedimento->update($requestData);
 
                 return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
             } catch (ValidationException $e) {
 
                 return response()->json(array('código' => 400, 'descrição' => $e->getMessage()), 400);
             }
-        } else {
+        }
+        else{
             return response()->json(array('código' => 404, 'descrição' => MessagesApi::STATUS_CODE_404_NOT_FOUND), 404);
         }
     }
@@ -76,20 +69,16 @@ class MedicoController extends Controller
     public function checkdata($request)
     {
 
-        if ($request->med_nome == null) {
-            throw new ValidationException();
+        if ($request->proc_nome == null) {
+            throw new ValidationException('O nome do procedimento não pode ser nulo');
         }
 
-        if ($request->med_CRM == null) {
-            throw new ValidationException();
+        if ($request->proc_valor == null) {
+            throw new ValidationException('falta informar o valor do procedimento');
         }
 
-        if ($request->id_especialidade == null) {
-            throw new ValidationException(MessagesApi::SPECIALITY_FIELD_DONT_BE_NULL);
-        }
-
-        if ($request->id_especialidade != null && $this->especialidades->find($request->id_especialidade) == null) {
-            throw new ValidationException(MessagesApi::SPECIALITY_NOT_FOUND);
+        if (!is_numeric($request->proc_valor)) {
+            throw new ValidationException('O valor do procedimento está incorreto. Envie no formato correto. Ex: 12.35');
         }
     }
 
@@ -106,7 +95,7 @@ class MedicoController extends Controller
             $this->checkdata($request);
             $requestData = $request->all();
 
-            $this->medicos->create($requestData);
+            $this->procedimentos->create($requestData);
 
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::CREATED_SUCESS), 200);
         } catch (ValidationException $e) {
@@ -145,10 +134,10 @@ class MedicoController extends Controller
     public function destroy($id)
     {
 
-        $medico = $this->medicos->find($id);
+        $procedimento = $this->procedimentos->find($id);
 
-        if ($medico != null) {
-            $delete = $medico->delete();
+        if ($procedimento != null) {
+            $delete = $procedimento->delete();
 
             if ($delete) {
 

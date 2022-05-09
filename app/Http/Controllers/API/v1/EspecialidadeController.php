@@ -55,8 +55,7 @@ class EspecialidadeController extends Controller
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::EDITED_SUCESS), 200);
         } catch (ValidationException $e) {
 
-
-            return response()->json(array('código' => 400, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
+            return response()->json(array('código' => 400, 'descrição' => $e->getMessage()), 400);
         }
     }
 
@@ -86,10 +85,9 @@ class EspecialidadeController extends Controller
             return response()->json(array('código' => 200, 'descrição' => MessagesApi::CREATED_SUCESS), 200);
         } catch (ValidationException $e) {
 
-            return response()->json(array('código' => 400, 'descrição' => MessagesApi::STATUS_CODE_400_BAD_REQUEST), 400);
+            return response()->json(array('código' => 400, 'descrição' => $e->getMessage()), 400);
         }
     }
-
 
 
     /**
