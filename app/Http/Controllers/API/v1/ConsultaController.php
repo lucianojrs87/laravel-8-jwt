@@ -242,7 +242,8 @@ class ConsultaController extends Controller
         }
     }
 
-    public function getByIdProceduresForwarded(Request $request)
+    //Funcao que retorna todas os dados das consultas que foram encaminhadas para realizar um procedimento adicional.
+    public function getAllProceduresForwarded()
     {
         $consultaProcedimento = ConsultaProcedimento::all();
 
