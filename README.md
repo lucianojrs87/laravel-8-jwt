@@ -1,64 +1,132 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+## API - Laravel com JWT
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Api criada em Laravel na versão 8 com MySql e implementando JWT como autenticador.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 1) Configuração do banco de dados
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Configurei com estes dados:
 
-## Learning Laravel
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_DATABASE=api-tisaude
+DB_USERNAME=root
+DB_PASSWORD=root
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Ao clonar o projeto no git irá um arquivo .env-example. Todas as informações de conexão estarão lá, basta se atentar para a porta, o nome do DB, o username e a senha de acesso ao banco no ambiente que o avaliador irá testar para que possa espelhar corretamente. Copie o arquivo, cole e em seguida terá de renomeá-lo desta forma: ".env"
+ 
+Se seu acesso no banco não tiver senha (Geralmente no ambiente local é comum não ter senha ou ter senha "root"), edite o arquivo .env não setando valor em DB_PASSWORD=
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 2) Atualize nossos pacotes de projeto 
+Rode o comando:
 
-## Laravel Sponsors
+```bash
+Composer update
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## 3) Gerar a key do nosso projeto
 
-### Premium Partners
+Em seguida iremos gerar a key do nosso projeto com o comando:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```bash
+php artisan key:generate
+```
 
-## Contributing
+## Passo 4) Gerar a key de autenticação do JWT
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Rode o comando:
 
-## Code of Conduct
+```bash
+php artisan jwt:secret
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+## Passo 5) Alimentando os dados em nosso banco
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Resolvi utilizar migrations para criar as tabelas do banco de dados e seeders para inserir registros.
+Rode o comando: 
 
-## License
+```bash
+php artisan migrate:fresh --seed
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+O banco ja virá todo alimentado por meio das sementes que executamos no quinto passo, que consequentemente irá gerar comodidade de quem for executar o projeto, todavia os endpoints estarão aí para uso livre da API.
+Irá ser criado o registro de acesso no banco de dados do qual o avaliador terá acesso e que o guiará na autenticação com o JWT nas demais rotinas da API.
+
+Segue abaixo as credenciais de acesso:
+
+```bash
+E-mail: tisaude@teste.com.br
+Password: tisaude123
+```
+Seguem os endpoints:
+
+## Login
+
+- http://localhost/laravel-8-jwt/public/api/login - Única rota aberta. Por meio dela iremos informar nossas credenciais de acesso (E-mail e password), ao acessá-la corretamente, um token será gerado. Por meio dele iremos percorrer as outras rotas.
+- http://localhost/laravel-8-jwt/public/api/me - Rota que irá mostrar nossos dados de usuário.
+- http://localhost/laravel-8-jwt/public/api/logout - Ao acessá-la, o usuário será deslogado e terá seu token finalizado, sendo assim ficará impedido de trafegar pelos outros endpoints.
+
+## Usuários
+
+- http://localhost/laravel-8-jwt/public/api/v1/users/getAll - Irá retornar todos os usuários cadastrados em nossa base de dados. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/users/getById/{id} - Irá retornar o usuário cadastrado em nossa base de dados mediante ao valor do Id passado pela url. Verbo: GET 
+- http://localhost/laravel-8-jwt/public/api/v1/users/update/{id} - Método que fará o update do usuário. Verbo: PUT
+- http://localhost/laravel-8-jwt/public/api/v1/users/store - Método que irá criar um novo usuário. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/users/delete/{id} - Irá deletar o usuário mediante ao valor do Id passado pela url. Verbo: DELETE
+
+## Pacientes
+- http://localhost/laravel-8-jwt/public/api/v1/pacientes/getAll - Irá retornar todos os pacientes cadastrados em nossa base de dados. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/pacientes/getById/{id} - Irá retornar o paciente cadastrado em nossa base de dados mediante ao valor do Id passado pela url. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/pacientes/update/{id} - Método que fará o update do paciente. Verbo: PUT
+- http://localhost/laravel-8-jwt/public/api/v1/pacientes/store - Método que irá criar um novo paciente. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/pacientes/delete/{id} - Irá deletar o paciente mediante ao valor do Id passado pela url. Verbo: DELETE
+
+## Planos de Saúde
+- http://localhost/laravel-8-jwt/public/api/v1/planos_saude/getAll - Irá retornar todos os planos de saúde cadastrados em nossa base de dados. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/planos_saude/getById/{id} - Irá retornar o plano de saúde cadastrado em nossa base de dados mediante ao valor do Id passado pela url. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/planos_saude/update/{id} - Método que fará o update do plano de saúde. Verbo: PUT
+- http://localhost/laravel-8-jwt/public/api/v1/planos_saude/store - Método que irá criar um novo plano de saúde. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/planos_saude/delete/{id} - Irá deletar o planos de saúde mediante ao valor do Id passado pela url. Verbo: DELETE
+
+## Associação do Paciente com Planos de Saúde
+- http://localhost/laravel-8-jwt/public/api/v1/associacao_pac_plano/associatePatientwithPlan - Método que faz a associação do Paciente com o Plano de saúde. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/associacao_pac_plano/deleteAssociationPacPlano/{id} - Irá deletar a associação mediante ao Id da associação passado pela url. Verbo: DELETE.
+- http://localhost/laravel-8-jwt/public/api/v1/associacao_pac_plano/getAllPlansByIdPatient/{id} - Irá trazer todos os planos de saúde associados ao paciente mediante ao Id do paciente passado pela url. Verbo: GET.
+
+## Especialidades
+- http://localhost/laravel-8-jwt/public/api/v1/especialidades/getAll - Irá retornar todos as especialidades cadastrados em nossa base de dados. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/especialidades/getById/{id} - Irá retornar a especialidade cadastrada em nossa base de dados mediante ao valor do Id passado pela url. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/especialidades/update/{id} - Método que fará o update da especialidade. Verbo: PUT
+- http://localhost/laravel-8-jwt/public/api/v1/especialidades/store - Método que irá criar uma nova especialidade. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/especialidades/delete/{id} - Irá deletar a especialidade mediante ao valor do Id passado pela url. Verbo: DELETE
+
+## Procedimentos
+- http://localhost/laravel-8-jwt/public/api/v1/procedimentos/getAll - Irá retornar todos os procedimentos cadastrados em nossa base de dados. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/procedimentos/getById/{id} - Irá retornar o procedimento cadastrado em nossa base de dados mediante ao valor do Id passado pela url. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/procedimentos/update/{id} - Método que fará o update do procedimento. Verbo: PUT
+- http://localhost/laravel-8-jwt/public/api/v1/procedimentos/store - Método que irá criar um novo procedimento. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/procedimentos/delete/{id} - Irá deletar o procedimento mediante ao valor do Id passado pela url. Verbo: DELETE
+
+## Médicos
+- http://localhost/laravel-8-jwt/public/api/v1/medicos/getAll - Irá retornar todos os médicos cadastrados em nossa base de dados. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/medicos/getById/{id} - Irá retornar o médico cadastrado em nossa base de dados mediante ao valor do Id passado pela url. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/medicos/update/{id} - Método que fará o update do médico. Verbo: PUT
+- http://localhost/laravel-8-jwt/public/api/v1/medicos/store - Método que irá criar um novo médico. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/medicos/delete/{id} - Irá deletar o médico mediante ao valor do Id passado pela url. Verbo: DELETE
+ 
+ ## Consultas
+- http://localhost/laravel-8-jwt/public/api/v1/consultas/getAll - Irá retornar todos as consultas cadastrados em nossa base de dados. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/consultas/getById/{id} - Irá retornar a consulta cadastrada em nossa base de dados mediante ao valor do Id passado pela url. Verbo: GET
+- http://localhost/laravel-8-jwt/public/api/v1/consultas/update/{id} - Método que fará o update da consulta. Verbo: PUT
+- http://localhost/laravel-8-jwt/public/api/v1/consultas/store - Método que irá criar uma nova consulta. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/consultas/delete/{id} - Irá deletar a consulta mediante ao valor do Id passado pela url. Verbo: DELETE
+- http://localhost/laravel-8-jwt/public/api/v1/consultas/forwardToProcedure - Função responsável para caso o médico não queira finalizar a consulta, mas sim encaminhar o paciente para realizar um procedimento. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/consultas/getAllProceduresForwarded - Função que retorna todos os dados das consultas que foram encaminhadas para realizar um procedimento adicional. Verbo: POST
+
+
+
+
+
