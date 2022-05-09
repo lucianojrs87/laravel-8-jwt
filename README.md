@@ -127,7 +127,7 @@ Seguem os endpoints:
 - http://localhost/laravel-8-jwt/public/api/v1/consultas/store - Método que irá criar uma nova consulta. Verbo: POST
 - http://localhost/laravel-8-jwt/public/api/v1/consultas/delete/{id} - Irá deletar a consulta mediante ao valor do Id passado pela url. Verbo: DELETE
 - http://localhost/laravel-8-jwt/public/api/v1/consultas/forwardToProcedure - Função responsável para caso o médico não queira finalizar a consulta, mas sim encaminhar o paciente para realizar um procedimento. Verbo: POST
-- http://localhost/laravel-8-jwt/public/api/v1/consultas/getAllProceduresForwarded - Função que retorna todos os dados das consultas que foram encaminhadas para realizar um procedimento adicional. Verbo: POST
+- http://localhost/laravel-8-jwt/public/api/v1/consultas/getAllProceduresForwarded - Função que retorna todos os dados das consultas que foram encaminhadas para realizar um procedimento adicional. Verbo: GET
 
 
 
