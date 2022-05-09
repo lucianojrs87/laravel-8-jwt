@@ -18,27 +18,27 @@ class ProcedimentosTableSeeder extends Seeder
     {
         Procedimento::create([
             'proc_nome' => 'Raio-X',
-            'proc_valor' => '15.30'
+            'proc_valor' => '15.00'
         ]);
 
         Procedimento::create([
             'proc_nome' => 'US',
-            'proc_valor' => '100.50'
+            'proc_valor' => '100.00'
         ]);
 
         Procedimento::create([
             'proc_nome' => 'Fisioterapia',
-            'proc_valor' => '60.40'
+            'proc_valor' => '60.00'
         ]);
 
         Procedimento::create([
             'proc_nome' => 'Cateterismo',
-            'proc_valor' => '1143.30'
+            'proc_valor' => '1143.00'
         ]);
 
         Procedimento::create([
             'proc_nome' => 'Consulta Nutricional',
-            'proc_valor' => '60.30'
+            'proc_valor' => '60.00'
         ]);
 
     }

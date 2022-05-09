@@ -89,6 +89,8 @@ route::prefix('v1')->group(function(){
         Route::post('/consultas/store', [ConsultaController::class, 'store']);
         Route::delete('/consultas/delete/{id}', [ConsultaController::class, 'destroy']);
         Route::post('/consultas/forwardToProcedure', [ConsultaController::class, 'forwardToProcedure']);
+        Route::post('/consultas/getByIdProceduresForwarded', [ConsultaController::class, 'getByIdProceduresForwarded']);
+
     });
 
 });

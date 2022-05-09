@@ -241,4 +241,24 @@ class ConsultaController extends Controller
             }
         }
     }
+
+    public function getByIdProceduresForwarded(Request $request)
+    {
+        $consultaProcedimento = ConsultaProcedimento::all();
+
+        if (count($consultaProcedimento) > 0) {
+            foreach ($consultaProcedimento as $item) {
+                $consulta = $this->consultas->find($item['id_consulta'])->first();
+                $item['medico_responsavel'] = $consulta->medico()->first()->med_nome;
+                $item['paciente'] = $consulta->paciente()->first()->pac_nome;
+                $item['procedimento'] = $item->procedimento()->first()->proc_nome;
+                $item['valor_procedimento'] = "R$ ".(number_format($item->procedimento()->first()->proc_valor, 2, ',', ' '));
+
+            }
+            return response()->json($consultaProcedimento, 200);
+        } else {
+            return response()->json(array('código' => 404, 'descrição' => MessagesApi::LIST_NULL), 404);
+        }
+    }
+
 }
