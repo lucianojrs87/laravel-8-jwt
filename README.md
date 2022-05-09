@@ -7,7 +7,7 @@ Api criada em Laravel na versão 8 com MySql e implementando JWT como autenticad
 - Laravel Framework 8.83.11
 - PHP 7.3.19
 
-## 1) Configuração do banco de dados
+## 1) Configurar o banco de dados
 
 Configurei com estes dados:
 
@@ -22,7 +22,7 @@ Ao clonar o projeto no git irá um arquivo .env-example. Todas as informações 
  
 Se seu acesso no banco não tiver senha (Geralmente no ambiente local é comum não ter senha ou ter senha "root"), edite o arquivo .env não setando valor em DB_PASSWORD=
 
-## 2) Atualize nossos pacotes de projeto 
+## 2) Atualizar pacotes do projeto 
 Rode o comando:
 
 ```bash
@@ -46,7 +46,7 @@ php artisan jwt:secret
 ```
 
 
-## 5) Alimentando os dados em nosso banco
+## 5) Alimentar os dados em nosso banco
 
 Resolvi utilizar migrations para criar as tabelas do banco de dados e seeders para inserir registros.
 Rode o comando: 
